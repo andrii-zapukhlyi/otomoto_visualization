@@ -1,7 +1,9 @@
 ---
 title: "Wizualizacja i predykcja danych (otomoto)"
-author: "Author: Andrii Zapukhlyi"
-output: html_document
+author: 'Author: Andrii Zapukhlyi'
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -10,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 ## <span style="color:#8D35FF; text-decoration:underline">Opis danych</span>
 
-#### Dane użyte w projekcie zostały pozyskane ze strony internetowej Otomoto, obejmując różnorodne informacje dotyczące ofert sprzedaży samochodów marki Audi. Zbiór danych zawiera kilka cech samochodów: model, rok produkcji, typ skrzyni biegów, przebieg, pojemność silnika, rodzaj paliwa, moc, spalanie i cena. Każdy rekord w ramce danych jest konkretną ofertę sprzedaży na platformie w dniu 27.12.2023
+#### Dane użyte w projekcie zostały zeskrapowane ze strony internetowej Otomoto, obejmując różnorodne informacje dotyczące ofert sprzedaży samochodów marki Audi. Zbiór danych zawiera kilka cech samochodów: model, rok produkcji, typ skrzyni biegów, przebieg, pojemność silnika, rodzaj paliwa, moc, spalanie i cena. Każdy rekord w ramce danych jest konkretną ofertę sprzedaży na platformie w dniu 27.12.2023
 
 ## <span style="color:#8D35FF; text-decoration:underline">Cele projektu</span>
 
@@ -20,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 #### 3. Analiza Trendów Rynkowych: Identyfikacja i zrozumienie trendów rynkowych na podstawie zebranych danych. Analiza, jak różne czynniki wpływają na ceny samochodów oraz jakie są preferencje nabywców w dniu dzisiejszym na rynku.
 
-## <span style="color:#8D35FF; text-decoration:underline">Import ramki danych</span>
+## <span style="color:#8D35FF; text-decoration:underline">Importowanie danych</span>
 
 #### Niżej jest reprezentowane dane, którzy były pobrane i zapisane w pliku csv jako dataset. (scraper i tworzenie ramki danych jest w pliku "scraper.r")
 
@@ -51,11 +53,12 @@ g <- df %>%
   geom_bar(fill = "darkgreen") +
   labs(x = "Rok", y = "Liczba", title = "Liczba ogłoszeń sprzedażowych według roku produkcji samochodu") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90), legend.position = "none", plot.title = element_text(hjust = 0.5))
+  theme(axis.text.x = element_text(angle = 90), legend.position = "none", plot.title = element_text(hjust = 0.5)) +
+  xlim(as.character(c(1995:2024)))
 ggplotly(g)
 ```
 
-#### Na wykresie mamy liczbę ogłoszeń w zależności od roku produkcji samochodu. Widzimy, że większość ogłoszeń to samochody z lat 2008-2022. Także na stronie są duża liczba samochodów nowych (1500 ogłoszeń w porównaniu z 500-700) i nawet już jest kilka samochodów z 2024 roku (przedsprzedaż)
+#### Na wykresie mamy liczbę ogłoszeń w zależności od roku produkcji samochodu. Widzimy, że większość ogłoszeń to samochody z lat 2008-2022 (400+ obs.). Także na stronie są duża liczba samochodów nowych (1500 ogłoszeń w porównaniu z 500-700) i nawet już jest kilka samochodów z 2024 roku (przedsprzedaż)
 
 ```{r, echo=FALSE}
 g <- df %>% 
@@ -70,7 +73,7 @@ g <- df %>%
 ggplotly(g)
 ```
 
-#### Z wykresu wyżej możemy zauważyć, że najwięcej samochodów to Audi A4 i A6, które są samochodami rodzinnymi (sedany z dużą ilością miejsca na tylnych siedzeniach i dużym bagażnikiem). Najmniej to samochody stare (modele 90,200,100) i sportowe (RS lub S pakiety).
+#### Z wykresu wyżej możemy zauważyć, że najpopulurniejsze modele to Audi A4 i A6, które są samochodami rodzinnymi (sedany z dużą ilością miejsca na tylnych siedzeniach i dużym bagażnikiem). Najmniej popularne samochody stare (modele 90,200,100) i sportowe (RS lub S pakiety).
 
 ```{r, echo=FALSE}
 g <- df %>%
@@ -79,13 +82,13 @@ g <- df %>%
   ggplot(aes(x = year, y = n, color=transmission)) +
   geom_line(size=1) +
   scale_color_manual(values = c("#83c5be", "#e94f37")) + 
-  labs(y = "Liczba", x = "Rok", title = "Typ skrzyni biegów w zależności od roku", color = "Skrzynia biegów") +
+  labs(y = "Liczba", x = "Rok", title = "Typ skrzyni biegów w zależności od roku produkcji", color = "Skrzynia biegów") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
 ggplotly(g)
 ```
 
-#### Stosownie skrzyń biegów: Po 2010 roku obserwujemy szybki wzrost automatycznych skrzyń biegów i prawie całkowita dominacja na rynku po 2019, liczba samochodów z manualną sb jest blisko zera. (skok automatycznych skrzyń do 1500 w 2023 roku wynika ze skoku ogólnej liczby samochodów)
+#### Co do skrzyń biegów: Po 2010 roku obserwujemy szybki wzrost automatycznych skrzyń biegów i prawie całkowita dominacja na rynku po 2019, liczba samochodów z manualną sb jest blisko zera. (skok automatycznych skrzyń do 1500 w 2023 roku wynika ze skoku ogólnej liczby samochodów)
 
 ```{r, echo=FALSE}
 df %>%
@@ -94,13 +97,14 @@ df %>%
   count() %>%
   ungroup() %>%
   mutate(percent = n/sum(n)*100) %>%
-  ggplot(aes(x = "", y = n, fill = fuelType)) +
+  ggplot(aes(x = 2, y = n, fill = fuelType)) +
   geom_bar(stat = "identity", color = "white") + 
-  geom_text(aes(label = paste(round(percent, 1), "%"), x = 1.57), position = position_stack(vjust = 0.6), angle = 45) + 
-  coord_polar("y", start = 0) +
+  geom_text(aes(label = paste(round(percent, 1), "%"), x = 2), position = position_stack(vjust = 0.5), angle = 45) + 
+  coord_polar(theta = "y") +
   theme_void() +
-  labs(title = "Procent każdego rodzaju paliwa", fill = "Rodzaj paliwa") +
-  theme(plot.title = element_text(hjust = 0.5))
+  labs(title = "Popularność rodzajów paliwa", fill = "Rodzaj paliwa") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  xlim(0.5, 2.5)
 ```
 
 #### Większość ogłoszeń samochodowych mają silnik diesla, na drugim miejscu jest benzyna i bardzo mały procent jest hybrydowych/elektrycznych/LPG (mniej niż 2%)
@@ -158,7 +162,7 @@ ggplotly(g)
 g <- df %>%
   ggplot(aes(y = price)) + 
   geom_boxplot(fill = "#83c5be") +
-  labs(y = "Cena", title = "Wykres boxplot po zmiennej Cena") +
+  labs(y = "Cena", title = "Wykres pudełkowy dla ceny") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
 ggplotly(g)
@@ -171,7 +175,7 @@ g <- df %>%
   ggplot(aes(y = price)) + 
   geom_boxplot(fill = "#83c5be") +
   scale_y_continuous(limits=c(0,100000)) +
-  labs(y = "Cena", title = "Wykres boxplot po zmiennej Cena(skalowalny)") + 
+  labs(y = "Cena", title = "Wykres podełkowy dla ceny(skalowalny)") + 
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
 ggplotly(g)
@@ -185,7 +189,7 @@ ggplotly(g)
 ```{r, echo=FALSE}
 g <- ggplot(df, aes(x = transmission, y = price, fill = transmission)) +
   geom_boxplot() +
-  labs(title = "Analiza cen w zależności od skrzyni biegów", x = "Skrzynia biegów", y = "Cena") +
+  labs(title = "Cena w zależności od skrzyni biegów", x = "Skrzynia biegów", y = "Cena") +
   theme_minimal() +
   theme(legend.position = 'none', plot.title = element_text(hjust = 0.5)) +
   scale_y_continuous(limits = c(0,100000))
@@ -199,7 +203,7 @@ g <- df %>%
   filter(fuelType != "Benzyna+CNG") %>% 
   ggplot(aes(x = fuelType, y = price, fill = fuelType)) +
   geom_boxplot() +
-  labs(title = "Analiza cen w zależności od rodzaju paliwa", x = "Rodzaj paliwa", y = "Cena") +
+  labs(title = "Cena w zależności od rodzaju paliwa", x = "Rodzaj paliwa", y = "Cena") +
   theme_minimal()+
   theme(legend.position = 'none', plot.title = element_text(hjust = 0.5)) 
 ggplotly(g)
@@ -236,7 +240,7 @@ df %>%
   melt() %>%
   ggplot(aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
   geom_text(aes(label = round(value, 2)), color = "black") +
-  labs(x = "", y = "", title = "Mapa korelacji dla zmiennych ciągłych") +
+  labs(x = "", y = "", title = "Mapa korelacji") +
   theme_minimal() +
   scale_fill_distiller(palette = "YlGnBu", direction = 1) +
   theme(plot.title = element_text(hjust = 0.5))
@@ -295,7 +299,6 @@ remove_outliers <- function(df, col) {
 for (col in num) {
   df <- remove_outliers(df, col)
 }
-boxplots(df, num)
 ```
 
 #### Teraz nasze dane nie mają wartości odstających i możemy już rozdzielić ramkę danych na treningowy i testowy zbiory. Treningowy (80% zbioru) - zbiór, używany do nauczania modelu, a testowy(20% zbioru) służy do oceny skuteczności modelu na danych, które nie były używane w procesie uczenia. Naszym targetem jest kolumna "price", wszyscy inni kolumny to predyktory
