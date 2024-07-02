@@ -322,7 +322,7 @@ df[num] <- scale(df[num])
 
 ## <span style="color:#8D35FF; text-decoration:underline">Budowa modelu, jego analiza</span>
 
-#### Także zrobiłem skalowanie numerycznych zmiennych. Buduję modele predykcyjne Random Forest i Linear Regression. Niżej, za pomocą wykresu krópkowego, przedstawiona jest różnica prewidywanych wartości i wartości rzeczywistych dla każdej metody, a także wartość współczynika korelacji R2.
+#### Także zrobiłem skalowanie numerycznych zmiennych. Buduję modele predykcyjne Random Forest i Linear Regression. Niżej, za pomocą wykresu krópkowego, przedstawiona jest różnica prewidywanych wartości i wartości rzeczywistych dla każdej metody, a także wartość współczynika determinacji R2.
 
 ```{r, echo = FALSE}
 rf_model <- randomForest(y_train ~ ., data = cbind(X_train, y_train), ntree = 300)
