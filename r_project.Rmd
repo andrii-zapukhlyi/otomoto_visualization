@@ -34,9 +34,10 @@ library(caret)
 library(plotly)
 df <- read.csv("data.csv")
 head(df, n = 10)
+dim(df)
 ```
 
-#### Możemy zauważyć, że mamy różne auta: jak nowe (1km przebiegu) tak i stare. Także mamy sportowe auta (RS4, S8), które mają ponad 450 koni mechanicznych. 
+#### W ramce danych składającej się z 12591 obserwacji i 9 atrybutów znajdują się różne typy samochodów. Są nowe (1km przebiegu) i używane. Także są sportowe auta (RS4, S8), które mają ponad 450 koni mechanicznych i kosztują więcej.
 
 ```{r, echo=FALSE}
 cat("Liczba wartości pustych:", sum(is.na(df)))
