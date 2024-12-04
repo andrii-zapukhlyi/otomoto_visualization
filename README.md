@@ -1,6 +1,6 @@
 # Otomoto.pl visualization
 
-Link to the raport: <a href="https://andrii-zapukhlyi.github.io/otomoto_visualization/r_project.html">Otomoto visualization</a>
+Link to the raport: <a href="https://andrii-zapukhlyi.github.io/otomoto_visualization/r_project.html">Raport</a>
 
 I scraped car attributes from the otomoto.pl, visualized the results, and built car price prediction models. Each record in the dataset represents a specific sales offer on the platform. <br>
 
